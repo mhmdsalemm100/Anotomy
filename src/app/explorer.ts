@@ -257,7 +257,7 @@ export class Explorer implements View {
     const right = new THREE.Vector3().setFromMatrixColumn(cam.matrixWorld, 0).normalize();
     const up = new THREE.Vector3().setFromMatrixColumn(cam.matrixWorld, 1).normalize();
     const p = this.body.parts.get(this.selected)!;
-    const scale = THREE.MathUtils.clamp(p.size * 0.6, 0.03, 0.25) * (big ? 2.5 : 1);
+    const scale = THREE.MathUtils.clamp(p.size * 0.35, 0.015, 0.15) * (big ? 2.5 : 1);
     let d: THREE.Vector3;
     if (dir === 'out') {
       const toward = new THREE.Vector3().setFromMatrixColumn(cam.matrixWorld, 2).normalize();

@@ -22,12 +22,39 @@ deployed entirely from this repository.
   fibres follow each muscle's own axis, porous bone, skin pores, wet clearcoat on viscera), image-based
   lighting, soft shadows, ground-truth ambient occlusion, and a one-click **3840×2160 (4K)** capture.
 
+![Thorax rendered by the app's own 4K export (3840×2160): lungs, heart, pulmonary and systemic vessels](docs/images/4k-thorax.jpg)
+
+<sub>Above: an unretouched frame from the app's **Save 4K image** button (3840×2160). Below: screenshots of the running site.</sub>
+
+| | |
+|---|---|
+| ![Landing page — choose the male or the female body](docs/images/landing.jpg) | ![Male muscular system, 659 structures](docs/images/muscular.jpg) |
+| **Start** — pick the male or female body | **Muscular system** — every muscle, tendon and fascia |
+| ![Neck region: platysma removed, sternocleidomastoid selected and moved aside](docs/images/neck-dissection.jpg) | ![Thorax: lungs, heart and vessels with the left ventricle selected](docs/images/thorax-organs.jpg) |
+| **Neck dissection** — platysma removed, SCM selected, moved aside, info and pronunciation on the left | **Thorax** — lungs, heart and great vessels |
+| ![Skeleton with arteries, veins and nerves](docs/images/systems.jpg) | ![Brain and cranial nerves](docs/images/head-brain.jpg) |
+| **Layered systems** — skeleton + cardiovascular + nervous | **Head** — brain, cranial nerves and nuclei |
+| ![Female body organs](docs/images/female.jpg) | ![Red blood cells](docs/images/micro-rbc.jpg) |
+| **Female body** — organs and skeleton (HuBMAP HRA) | **Red blood cells** — true Evans–Fung biconcave shape |
+| ![Human cell with organelles](docs/images/micro-cell.jpg) | ![Myelinated neuron](docs/images/micro-neuron.jpg) |
+| **Cell** — nucleus, ER, Golgi, mitochondria … | **Neuron** — dendrites, myelin, nodes of Ranvier |
+| ![Sarcomere](docs/images/micro-sarcomere.jpg) | ![DNA double helix](docs/images/micro-dna.jpg) |
+| **Sarcomere** — actin / myosin lattice, Z-discs | **DNA** — B-form helix, major and minor grooves |
+
 ## Run locally
 
 ```bash
 npm ci
 npm run dev        # http://localhost:5173
 npm run build      # type-check + production build into dist/
+```
+
+Checks (with `npm run dev` running in another terminal):
+
+```bash
+npm run kb:check   # knowledge-base coverage of every 3D structure
+npm run e2e        # headless-Chromium walk through the whole explorer (42 assertions)
+npm run shots      # re-render the README images into docs/images/
 ```
 
 The 3D assets in `public/models/` are committed, so nothing else is needed to run the site.

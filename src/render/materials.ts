@@ -180,17 +180,23 @@ ${NOISE}
 float an_detail(vec3 p, out float fade){
   float s = uDetailScale;
   vec3 q = p * s;
-  // fade detail out when a noise cycle is smaller than ~1.5 pixels (anti-aliasing)
+  // fade detail out before a noise cycle shrinks to a couple of pixels (anti-aliasing)
   float fw = length(fwidth(q));
-  fade = 1.0 - smoothstep(0.35, 0.9, fw);
+  fade = 1.0 - smoothstep(0.25, 0.7, fw);
   if (uDetailKind < 0.5) return 0.0;
   if (uDetailKind < 1.5) {
     vec3 a = dot(vFiber, vFiber) > 0.25 ? normalize(vFiber) : vec3(0.0, 1.0, 0.0);
     vec3 b = normalize(cross(a, abs(a.y) < 0.9 ? vec3(0.0, 1.0, 0.0) : vec3(1.0, 0.0, 0.0)));
     vec3 c = cross(a, b);
     vec3 f = vec3(dot(p, a) * s * 0.035, dot(p, b) * s, dot(p, c) * s);
-    fade = 1.0 - smoothstep(0.35, 0.9, length(fwidth(f)));
-    return an_snoise(f) * 0.65 + an_snoise(f * vec3(1.0, 2.7, 2.7)) * 0.35;
+    // Fascicles (coarse octave) stay visible at normal viewing distance; finer fibre octaves
+    // fade in as the camera closes in, each before it would alias into a woven pattern.
+    float w = length(fwidth(f));
+    float k1 = 1.0 - smoothstep(0.2, 0.55, w * 0.3);
+    float k2 = 1.0 - smoothstep(0.2, 0.55, w);
+    float k3 = 1.0 - smoothstep(0.2, 0.55, w * 2.7);
+    fade = 1.0;
+    return an_snoise(f * vec3(1.0, 0.3, 0.3)) * 0.5 * k1 + an_snoise(f) * 0.32 * k2 + an_snoise(f * vec3(1.0, 2.7, 2.7)) * 0.18 * k3;
   }
   if (uDetailKind < 2.5) {
     float n = an_snoise(q) * 0.55 + an_snoise(q * 3.1) * 0.3 + an_snoise(q * 0.13) * 0.15;
