@@ -1,0 +1,38 @@
+{
+  "name": "anotomy",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Interactive, photoreal 3D human anatomy atlas in the browser: male and female bodies, every system, region dissection, and a microscopic explorer.",
+  "type": "module",
+  "license": "MIT",
+  "engines": {
+    "node": ">=20.19"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "npm run typecheck && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit",
+    "assets:fetch": "node tools/fetch-sources.mjs",
+    "assets:build": "node tools/build-assets.mjs",
+    "assets": "npm run assets:fetch && npm run assets:build",
+    "kb:check": "node tools/check-kb.mjs",
+    "shots": "node tools/showcase.mjs",
+    "e2e": "node tools/e2e.mjs"
+  },
+  "dependencies": {
+    "three": "^0.186.1",
+    "three-mesh-bvh": "^0.9.15"
+  },
+  "devDependencies": {
+    "@gltf-transform/core": "^4.5.0",
+    "@gltf-transform/extensions": "^4.5.0",
+    "@gltf-transform/functions": "^4.5.0",
+    "@types/three": "^0.186.0",
+    "draco3dgltf": "^1.5.7",
+    "meshoptimizer": "^1.2.0",
+    "playwright-core": "^1.63.0",
+    "typescript": "~5.9.3",
+    "vite": "^8.3.1"
+  }
+}
