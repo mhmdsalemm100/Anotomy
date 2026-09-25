@@ -260,3 +260,27 @@ kbd { font-family: inherit; font-size: 12px; padding: 2px 7px; border-radius: 6p
   .landing-cards { gap: 12px; flex-wrap: wrap; bottom: 70px; padding: 0 16px; }
   .sex-card { min-width: 0; flex: 1; }
 }
+
+/* ---------------- micro explorer ---------------- */
+.micro-title { display: inline-flex; align-items: center; gap: 7px; font-weight: 700; font-size: 14px; color: #cfe8f5; margin-left: 6px; }
+.micro-title .icon { color: var(--accent); }
+.micro-list { width: 290px; }
+.micro-item.active { background: rgba(39,211,255,.14); color: #fff; box-shadow: inset 3px 0 0 var(--accent); }
+.micro-info { position: absolute; top: calc(var(--topbar) + 12px); right: 12px; bottom: 84px; width: 360px; overflow-y: auto; padding: 16px; z-index: 10; }
+.micro-info h2 { font-size: 20px; }
+.micro-part { margin-top: 14px; padding: 12px 14px; border-radius: 12px; border: 1px solid rgba(39,211,255,.4); background: rgba(39,211,255,.08); }
+.micro-part .part-name { margin: 0; font-size: 16px; flex: 1; }
+.micro-part p { font-size: 13.5px; line-height: 1.6; margin: 8px 0 0; color: #dbe3ee; }
+.small-latin { font-size: 16px !important; }
+.micro-labels { position: absolute; inset: 0; pointer-events: none !important; overflow: hidden; }
+.micro-label { position: absolute; left: 0; top: 0; padding: 3px 8px; border-radius: 7px; font-size: 12px; font-weight: 600; white-space: nowrap; color: #eaf6ff; background: rgba(8,12,18,.72); border: 1px solid rgba(39,211,255,.45); box-shadow: 0 6px 16px rgba(0,0,0,.35); }
+.micro-label::after { content: ''; position: absolute; left: 50%; bottom: -7px; width: 1px; height: 7px; background: rgba(39,211,255,.7); }
+.scale-bar { position: absolute; right: 390px; bottom: 56px; display: flex; flex-direction: column; align-items: center; gap: 4px; pointer-events: none !important; z-index: 9; }
+.scale-bar-line { height: 6px; border: 2px solid #eaf6ff; border-top: 0; min-width: 20px; }
+.scale-bar-label { font-size: 12px; font-weight: 700; color: #eaf6ff; text-shadow: 0 1px 3px #000; }
+.micro-hint { position: absolute; bottom: 22px; left: 50%; transform: translateX(-50%); font-size: 12.5px; color: var(--muted); pointer-events: none !important; }
+@media (max-width: 760px) {
+  .micro-list { max-height: 30vh; }
+  .micro-info { top: auto; left: 8px; right: 8px; bottom: auto; top: calc(var(--topbar) + 8px); width: auto; max-height: 30vh; }
+  .scale-bar { right: 16px; bottom: calc(30vh + 90px); }
+}
