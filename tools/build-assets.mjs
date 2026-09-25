@@ -40,7 +40,7 @@ const CNS_TISSUE = new Set(['greyMatter', 'whiteMatter', 'csf', 'choroidPlexus']
 // Z-Anatomy components that must not ship: non-commercial (inner ear: Univ. of Dundee
 // CC BY-NC-SA; kidney: lissiecowley CC BY-NC) or without a stated licence (Brainder cortex,
 // UW white matter – the whole intracranial CNS is replaced by BodyParts3D instead).
-const ZA_EXCLUDE = /^(kidney|renal pelvis)$|intrarenal arter|^cochlea$|^vestibule$|tympanic membrane|^(incus|malleus|stapes)$/;
+const ZA_EXCLUDE = /^(kidney|renal pelvis)$|intrarenal (arter|vein)|^cochlea$|^vestibule$|tympanic membrane|^(incus|malleus|stapes)$/;
 
 // BodyParts3D structures imported into the male model (absent or excluded in Z-Anatomy).
 const BP_IMPORT = (c) =>

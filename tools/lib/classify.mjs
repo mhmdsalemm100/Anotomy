@@ -43,6 +43,11 @@ const BONE_WORDS = [
 const RULES = [
   // ---- special cases ----------------------------------------------------------------
   R(/hepatovenous segment/, 'digestive', 'liver', 'liver'),
+  R(/biliary tree|duct of caudate lobe/, 'digestive', 'bile', 'biliary'),
+  R(/caudate lobe|quadrate lobe/, 'digestive', 'liver', 'liver'),
+  R(/cortex of kidney|renal cortex|renal medulla/, 'urinary', 'kidney', 'kidney'),
+  R(/nucleus pulposus|an+ulus fibrosus/, 'skeletal', 'disc', 'joint'),
+  R(/(crico-?arytenoid|thyro-?arytenoid|oblique arytenoid|transverse arytenoid) muscle|ary-?epiglottic part|thyro-?epiglottic part/, 'muscular', 'muscle', 'muscle'),
   R(/scleral venous sinus|schlemm/, 'sensory', 'vein', 'eye'),
   R(/ciliary muscle/, 'sensory', 'muscle', 'eye'),
   R(/lacrimal bone/, 'skeletal', 'bone', 'bone'),
@@ -53,6 +58,8 @@ const RULES = [
   R(/^cornua of uterus$/, 'reproductive', 'uterus', 'internal'),
   R(/^(atrium|ventricle)$|heart ventricle|cardiac atrium/, 'cardiovascular', 'myocardium', 'heart'),
   R(/sinus of (frontal|sphenoid|maxilla|ethmoid)|cells of ethmoid|(frontal|sphenoidal|maxillary) sinus/, 'skeletal', 'sinus', 'bone'),
+
+  R(/\bnodes?\b/, 'lymphatic', 'lymphoid', 'lymphoid'),
 
   // ---- integumentary ------------------------------------------------------------------
   R(/^skin\b|skin of body/, 'integumentary', 'skin', 'skin'),
@@ -88,7 +95,7 @@ const RULES = [
   R(/spinal cord segment|segment of (cervical|thoracic|lumbar|sacral) spinal cord|^spinal cord/, 'nervous', 'whiteMatter', 'spinal'),
   R(/horn of spinal cord|intermediate substance|reticular process|nucleus proprius|intermedio(lateral|medial) nucleus|nucleus of accessory nerve/, 'nervous', 'greyMatter', 'spinal'),
   R(/(spinal|spino|cortico|rubro|tecto|reticulo|vestibulo)\w* tract|fasciculus|posterolateral tract|white matter of spinal/, 'nervous', 'whiteMatter', 'spinal'),
-  R(/nucle(us|i|ar)|piriform|claustrum/, 'nervous', 'greyMatter', 'brain'),
+  R(/nucle(us|i|ar)|piriform(?!is)|claustrum/, 'nervous', 'greyMatter', 'brain'),
   R(/white matter|corpus callosum|commissure|internal capsule|fornix|peduncle|mammillothalamic|stria (terminalis|medullaris)|brachium of|olfactory tract|septum pellucidum/, 'nervous', 'whiteMatter', 'brain'),
   R(/gyr(us|i)|sulc|lobule|cortex|cerebell|vermis|pons|pontine|medulla oblongata|midbrain|thalam|putamen|caudate|pallidus|lentiform|amygd|hippocamp|colliculus|geniculate|habenul|mam+illary|tuber cinereum|lamina terminalis|septum of telencephalon|substantia nigra|zona incerta|basal forebrain|accumbens|olfactory|insula|operculum|precuneus|cuneus|planum|temporal plane|\bpole\b|tegmentum|olive|interpeduncular|occipital lobe|pretectal|limen insula|subcallosal|perirhinal|hypothalam|region of hth|brain|culmen|declive|flocculus|folium|nodule of vermis|pyramis|tuber of vermis|uvula of vermis|lingula of cerebellum|pyramid of medulla|lat_fis|fissure/, 'nervous', 'greyMatter', 'brain'),
 
@@ -202,7 +209,7 @@ export function normalizeName(part) {
   if (part.src === 'za') {
     const m = raw.match(/\.(l|r)$/);
     if (m) { side = m[1] === 'l' ? 'left' : 'right'; raw = raw.slice(0, -2); }
-    raw = raw.replace(/'+$/, '');
+    raw = raw.replace(/\s*\/\/.*$/, '').replace(/'+$/, '').replace(/\.$/, '');
     if (/^\(.*\)$/.test(raw)) { official = false; raw = raw.slice(1, -1); }
     raw = raw.replace(/\*/g, '').replace(/\s+/g, ' ').trim();
   }

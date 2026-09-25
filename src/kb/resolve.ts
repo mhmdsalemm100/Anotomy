@@ -50,6 +50,7 @@ export function variants(key: string): { k: string; parent?: boolean }[] {
   add(key.replace(/ bone$/, ''));
   add(key.replace(/^set of /, ''));
   add(key.replace(/ proper$/, ''));
+  add(key.replace(/ (i|ii|iii|iv|v|vi|vii|viii|ix|x|xi|xii)$/, ''));
 
   // vertebrae
   let m = key.match(/^vertebra ([ctl])(\d+)$/) ?? null;
@@ -82,8 +83,7 @@ export function variants(key: string): { k: string; parent?: boolean }[] {
   if (/costal cartilage/.test(key)) add('costal cartilage');
 
   // hand and foot bones
-  if (/phalanx .*(hand|finger|thumb)/.test(key) || /phalanx of (index|middle|ring|little) finger|phalanx of thumb/.test(key)) add('phalanges of hand');
-  if (/phalanx .*(foot|toe)/.test(key)) add('phalanges of foot');
+  if (/phalanx/.test(key)) add(/foot|toe/.test(key) ? 'phalanges of foot' : 'phalanges of hand');
   if (/metacarpal/.test(key)) { if (/first/.test(key)) add('first metacarpal'); add('metacarpal bones'); }
   if (/metatarsal/.test(key)) { if (/first/.test(key)) add('first metatarsal'); if (/fifth/.test(key)) add('fifth metatarsal'); add('metatarsal bones'); }
   if (/sesamoid/.test(key)) add('sesamoid bones');
@@ -100,7 +100,7 @@ export function variants(key: string): { k: string; parent?: boolean }[] {
     add(parent, true);
     add(parent.replace(/ muscles?$/, ''), true);
     // "anterior temporal branch of left lateral occipital artery" → also the grand-parent
-    const deeper = parent.match(/ of (?:the )?(.+ (?:artery|vein|nerve))$/);
+    const deeper = parent.match(/ of (?:the )?(.+ (?:artery|vein|nerve|plexus))$/);
     if (deeper) add(deeper[1], true);
   }
   // "X muscles of hand" → "X muscles"
@@ -110,6 +110,11 @@ export function variants(key: string): { k: string; parent?: boolean }[] {
   if (back) add(back[1], true);
   if (/obliquus (inferior|superior) capitis/.test(noMuscle)) add(noMuscle.replace(/obliquus (inferior|superior) capitis/, 'obliquus capitis $1'));
   if (/rectus (anterior|lateralis|posterior major|posterior minor) capitis/.test(noMuscle)) add(noMuscle.replace(/rectus (.+) capitis/, 'rectus capitis $1'));
+  if (/spinal cord/.test(key)) add('spinal cord', true);
+  if (/segmental bronch|lingular bronch/.test(key)) add('segmental bronchus');
+  if (/condyle of femur|intercondylar fossa|patellar surface of femur/.test(key)) add('femur', true);
+  if (/enthesis|perichond/.test(key)) add('enthesis');
+  if (/^nucleus of .*nerve|nucleus ambiguus|salivatory nucleus|vestibular nuclei|cochlear nucleus/.test(key)) add('cranial nerve nuclei', true);
   // lymph nodes: "superficial lateral cervical nodes" → "cervical lymph nodes"
   if (/\bnodes?\b/.test(key)) {
     for (const g of ['cervical', 'axillary', 'inguinal', 'popliteal', 'iliac', 'mesenteric', 'tracheobronchial', 'parotid', 'submandibular', 'aortic', 'caval', 'coeliac', 'gastric', 'pancreatic', 'colic', 'sacral', 'gluteal', 'vesical', 'rectal', 'mediastinal', 'pericardial', 'parasternal', 'intercostal', 'diaphragmatic', 'jugular', 'occipital', 'mastoid', 'cubital', 'supratrochlear', 'brachial', 'pectoral']) {
