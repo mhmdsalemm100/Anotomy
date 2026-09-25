@@ -146,7 +146,9 @@ export class BodyModel {
   /**
    * A structure belongs to a region view when a meaningful share of it lies inside:
    * ≥15 % of it, or a long structure (vessel, nerve, sheet muscle) with ≥3 cm inside.
-   * The skin is always kept (clipped) so the region reads as a body part.
+   * The skin is always kept (clipped) so the region reads as a body part. A short structure
+   * that mostly belongs to a neighbouring region (the masseter seen from the neck) would
+   * only show as a cut stump, so it is left to that region.
    */
   inRegion(p: Part, region = this.region) {
     if (!region) return true;
@@ -154,7 +156,15 @@ export class BodyModel {
     if (!f) return false;
     if (p.info.t === 'skin') return true;
     if (p.info.t === 'bone' || p.info.t === 'tooth') return f >= 45;
-    return f >= 15 || (f / 100) * p.size >= 0.03;
+    const inside = (f / 100) * p.size;
+    if (inside >= 0.03) return true;
+    if (f < 15) return false;
+    if (f < 40) {
+      let home = 0;
+      for (const [id, g] of Object.entries(p.info.r)) if (id !== region.id) home = Math.max(home, g);
+      if (home >= 75) return false;
+    }
+    return true;
   }
 
   isPulled(p: Part) { return p.offset.lengthSq() > 1e-8; }

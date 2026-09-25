@@ -152,7 +152,7 @@ export class Landing implements View {
 
   destroy() {
     this.disposers.forEach((d) => d());
-    this.rig.controls.dispose();
+    this.rig.dispose();
     for (const b of Object.values(this.bodies)) b?.dispose();
     this.app.stage.renderer.domElement.style.cursor = CURSOR_OPEN;
   }

@@ -50,6 +50,8 @@ export class Explorer implements View {
   private skinOpacity = 1;
   private destroyed = false;
   private listFilter = '';
+  /** Structures the user hid (hide / isolate); "show hidden" restores only these. */
+  private userHidden = new Set<string>();
 
   static async create(app: App, route: Route & { name: 'body' }): Promise<Explorer> {
     const ex = new Explorer(app, route.sex);
@@ -85,6 +87,7 @@ export class Explorer implements View {
     this.renderToolbar();
     await this.apply(route);
     app.loader.hide();
+    if (import.meta.env.DEV) (window as any).__explorer = this; // test hook (tools/e2e.mjs)
     (window as any).__ready = true;
   }
 
@@ -102,7 +105,7 @@ export class Explorer implements View {
   destroy() {
     this.destroyed = true;
     this.disposers.forEach((d) => d());
-    this.rig.controls.dispose();
+    this.rig.dispose();
     shared.uHLStrength.value = 0;
     this.body?.dispose();
     this.app.stage.setAOClipping(false);
@@ -218,7 +221,7 @@ export class Explorer implements View {
   hide(ids: string[]) {
     ids = ids.filter((i) => !this.body.parts.get(i)?.hidden);
     if (!ids.length) return;
-    for (const id of ids) this.body.parts.get(id)!.hidden = true;
+    for (const id of ids) { this.body.parts.get(id)!.hidden = true; this.userHidden.add(id); }
     this.undoStack.push({ type: 'hide', ids });
     if (this.selected && ids.includes(this.selected)) this.select(null);
     this.body.refresh();
@@ -232,7 +235,8 @@ export class Explorer implements View {
   }
 
   showAll() {
-    for (const p of this.body.parts.values()) p.hidden = false;
+    for (const id of this.userHidden) this.body.parts.get(id)!.hidden = false;
+    this.userHidden.clear();
     this.undoStack = this.undoStack.filter((u) => u.type !== 'hide');
     this.body.refresh();
     this.renderLeft();
@@ -273,7 +277,7 @@ export class Explorer implements View {
   undo() {
     const u = this.undoStack.pop();
     if (!u) return;
-    if (u.type === 'hide') for (const id of u.ids) this.body.parts.get(id)!.hidden = false;
+    if (u.type === 'hide') for (const id of u.ids) { this.body.parts.get(id)!.hidden = false; this.userHidden.delete(id); }
     if (u.type === 'move') this.body.parts.get(u.id)!.offset.copy(u.from);
     if (u.type === 'explode') { this.body.setExplode(u.from); this.renderToolbar(); }
     this.body.refresh();
@@ -507,7 +511,7 @@ export class Explorer implements View {
       }
       hits.sort((a, b) => Number(!a.info.k.startsWith(q)) - Number(!b.info.k.startsWith(q)) || a.info.n.length - b.info.n.length);
       for (const p of hits.slice(0, 40)) {
-        results.append(h('button', { class: 'search-item', onclick: () => { results.classList.add('hidden'); input.value = ''; this.reveal(p.info.id); } },
+        results.append(h('button', { class: 'search-item', onclick: () => { results.classList.add('hidden'); input.value = ''; input.blur(); this.reveal(p.info.id); } },
           h('span', { class: 'dot', style: `background:${SYSTEM_META[p.info.sys]?.color}` }),
           h('span', { class: 'si-name' }, p.info.n), p.info.s !== 'midline' ? h('span', { class: 'si-side' }, p.info.s) : null,
           h('span', { class: 'si-sys' }, SYSTEM_META[p.info.sys]?.label)));
@@ -672,7 +676,7 @@ export class Explorer implements View {
       for (const r of this.body.manifest.regions.filter((x) => x.group === g)) {
         row.append(h('button', {
           class: 'region-btn', onclick: () => this.enterRegion(r.id),
-          onmouseenter: () => this.body.highlightRegion(r.id), onmouseleave: () => this.body.highlightRegion(null),
+          onmouseenter: () => { if (!this.body.region) this.body.highlightRegion(r.id); }, onmouseleave: () => this.body.highlightRegion(null),
         }, r.label));
       }
       wrap.append(row);

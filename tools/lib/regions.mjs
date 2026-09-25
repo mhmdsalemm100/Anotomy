@@ -22,10 +22,11 @@ export function inside(planes, x, y, z, margin = 0) {
 
 function vertsOf(part) { return part.positions; }
 
-function extreme(part, axis, sign) {
+function extreme(part, axis, sign, pred = () => true) {
   const P = vertsOf(part);
   let best = -Infinity, idx = 0;
   for (let i = 0; i < P.length; i += 3) {
+    if (!pred(P[i], P[i + 1], P[i + 2])) continue;
     const v = P[i + axis] * sign;
     if (v > best) { best = v; idx = i; }
   }
@@ -111,8 +112,14 @@ export function computeLandmarks(parts, log = () => {}) {
   L.menton = mandible
     ? extreme(mandible, 1, -1)
     : (() => { const s = slab(c3top + 0.005, c3top + 0.03, (x) => Math.abs(x) < 0.02); return maxBy(s, (p) => p[2]); })();
-  L.inion = occipital
-    ? extreme(occipital, 2, -1)
+  // Inion (external occipital protuberance): the most posterior midline point of the lower
+  // occipital squama — the skull's overall most posterior point (opisthocranion) lies higher.
+  const occInion = occipital && (() => {
+    const [y0, y1] = [occipital.bounds[0][1], occipital.bounds[1][1]];
+    return extreme(occipital, 2, -1, (x, y) => Math.abs(x) < 0.015 && y < y0 + 0.4 * (y1 - y0));
+  })();
+  L.inion = occInion
+    ? occInion
     : (() => { const y = (vy('C1', 'top') ?? c3top + 0.04) + 0.02; const s = slab(y - 0.01, y + 0.01, (x) => Math.abs(x) < 0.02); return maxBy(s, (p) => -p[2]); })();
   const c7 = spine.C7;
   L.c7 = c7 ? extreme(c7, 2, -1) : [0, H * 0.83, zMid - 0.1];

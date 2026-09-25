@@ -88,6 +88,7 @@ export class App {
     this.view = null;
     this.ui.replaceChildren();
     this.tooltip.hide();
+    this.stage.renderer.domElement.style.cursor = CURSOR_OPEN;
     const factory = this.views[r.name];
     this.view = await factory(this, r);
   }

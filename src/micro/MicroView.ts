@@ -254,7 +254,7 @@ export class MicroView implements View {
 
   destroy() {
     this.disposers.forEach((d) => d());
-    this.rig.controls.dispose();
+    this.rig.dispose();
     if (this.root) disposeTree(this.root);
     this.app.stage.scene.remove(this.holder);
     this.app.stage.scene.background = this.prevBg ?? new THREE.Color('#0b0e13');

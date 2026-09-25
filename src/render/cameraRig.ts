@@ -9,9 +9,12 @@ export class CameraRig {
   readonly controls: OrbitControls;
   private anim: { from: [THREE.Vector3, THREE.Vector3]; to: [THREE.Vector3, THREE.Vector3]; t0: number; dur: number; done?: () => void } | null = null;
   autoRotate = false;
+  private readonly tickFn = () => this.tick();
 
   constructor(private stage: Stage) {
-    const c = new OrbitControls(stage.camera, stage.renderer.domElement);
+    const el = stage.renderer.domElement, cursor = el.style.cursor;
+    const c = new OrbitControls(stage.camera, el);
+    el.style.cursor = cursor; // OrbitControls resets it to 'auto'; keep the app's grab hand
     c.enableDamping = true;
     c.dampingFactor = 0.08;
     c.rotateSpeed = 0.7;
@@ -24,12 +27,22 @@ export class CameraRig {
     c.mouseButtons = { LEFT: THREE.MOUSE.ROTATE, MIDDLE: THREE.MOUSE.DOLLY, RIGHT: THREE.MOUSE.PAN };
     c.addEventListener('change', () => stage.invalidate());
     this.controls = c;
-    stage.onBeforeRender.push(() => this.tick());
+    stage.onBeforeRender.push(this.tickFn);
+  }
+
+  /** Detaches the controls and the per-frame tick (views call this when they close). */
+  dispose() {
+    this.anim = null;
+    const i = this.stage.onBeforeRender.indexOf(this.tickFn);
+    if (i >= 0) this.stage.onBeforeRender.splice(i, 1);
+    const el = this.stage.renderer.domElement, cursor = el.style.cursor;
+    this.controls.dispose();
+    el.style.cursor = cursor;
   }
 
   private tick() {
     if (this.anim) {
-      const k = Math.min(1, (performance.now() - this.anim.t0) / this.anim.dur);
+      const k = this.anim.dur > 0 ? Math.min(1, (performance.now() - this.anim.t0) / this.anim.dur) : 1;
       const e = ease(k);
       this.stage.camera.position.lerpVectors(this.anim.from[0], this.anim.to[0], e);
       this.controls.target.lerpVectors(this.anim.from[1], this.anim.to[1], e);
